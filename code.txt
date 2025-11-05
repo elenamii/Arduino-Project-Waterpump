@@ -1,0 +1,103 @@
+
+/*int relay = 5;
+#define sensor A5
+unsigned long previousMillis = 0;
+const unsigned long interval = 10000; //86400000
+
+void setup() 
+{
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+
+  pinMode(relay, OUTPUT);
+  pinMode(sensor, INPUT);
+ // pinMode(sensor, OUTPUT);
+  digitalWrite(relay, LOW);
+
+
+}
+
+void loop() 
+{
+  unsigned long currentMillis = millis();
+
+  if(currentMillis - previousMillis >= interval)
+  {
+    previousMillis = currentMillis;
+
+    int value = analogRead(sensor);
+    Serial.println("soil moisture: ");
+    Serial.println(value);
+
+    if (value <200)
+    {
+      digitalWrite(relay, HIGH);
+      Serial.println(" relay ON");
+
+      delay(5000);
+      digitalWrite(relay, LOW);
+      Serial.println("relay OFF");
+    }
+    else 
+    {
+    digitalWrite(relay, LOW);
+    Serial.println("relay OFF");
+
+    }
+  }
+  
+
+  
+
+  
+}
+
+*/
+
+int relayPin = 5;
+#define sensorPin A5
+
+unsigned long previousMillis = 0;
+const unsigned long interval = 86400000; // 24 Stunden in Millisekunden
+const unsigned long pumpDuration = 3000; // 3 Sekunden Pumpenlauf
+
+bool pumpDoneToday = false;
+unsigned long pumpStartMillis = 0;
+bool pumpRunning = false;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(relayPin, OUTPUT);
+  pinMode(sensorPin, INPUT);
+  digitalWrite(relayPin, LOW); // Relais aus (Active-HIGH)
+}
+
+void loop() {
+  unsigned long currentMillis = millis();
+
+  // Prüfe einmal am Tag
+  if(currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+    pumpDoneToday = false; // Reset für neuen Tag
+
+    int value = analogRead(sensorPin);
+    Serial.print("Soil moisture: ");
+    Serial.println(value);
+
+    if(value < 200 && !pumpDoneToday) {
+      // Pumpe für 3 Sekunden einschalten
+      digitalWrite(relayPin, HIGH);
+      pumpRunning = true;
+      pumpStartMillis = currentMillis;
+      Serial.println("Relay ON (Pump start)");
+      pumpDoneToday = true; // Für diesen Tag Pumpe markiert
+    }
+  }
+
+  // Pumpe nach 3 Sekunden ausschalten
+  if(pumpRunning && (currentMillis - pumpStartMillis >= pumpDuration)) {
+    digitalWrite(relayPin, LOW);
+    pumpRunning = false;
+    Serial.println("Relay OFF (Pump stop)");
+  }
+}
