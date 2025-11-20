@@ -92,12 +92,12 @@ void loop() {
       Serial.println("Relay ON (Pump start)");
       pumpDoneToday = true; // Für diesen Tag Pumpe markiert
     }
-  }
+      // Pumpe nach 3 Sekunden ausschalten
 
-  // Pumpe nach 3 Sekunden ausschalten
-  if(pumpRunning && (currentMillis - pumpStartMillis >= pumpDuration)) {
+      if(pumpRunning && (currentMillis - pumpStartMillis >= pumpDuration)) {
     digitalWrite(relayPin, LOW);
     pumpRunning = false;
     Serial.println("Relay OFF (Pump stop)");
+  }
   }
 }
