@@ -1,8 +1,7 @@
-#define moistureSensor A5
 #define pumpPin 5
 
 int waterDurationInSec = 3;
-int readIntervallInSec = 10;
+long timer = 1000*60*60*24;
 
 void setup()
 {
@@ -13,22 +12,10 @@ void setup()
 
 void loop()
 {
-  int moisture = getMoisture();
-  Serial.println(moisture);
-  if (moisture < 100)
-  {
-    Serial.println("unter 100");
-    waterPlant();
-    Serial.println("Fertig");
-  }
+  delay(timer);
+  waterPlant();
 }
 
-int getMoisture()
-{
-  delay(readIntervallInSec * 1000);
-  int moistureValue = analogRead(moistureSensor);
-  return moistureValue;
-}
 
 void waterPlant()
 {
@@ -36,4 +23,3 @@ void waterPlant()
   delay(waterDurationInSec * 1000);
   digitalWrite(pumpPin, 0);
 }
-
